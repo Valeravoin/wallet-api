@@ -29,8 +29,9 @@
 
 ## Работа с миграциями 🛠️
 
+**Применить все миграции: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic upgrade head**
+
 - Когда нужно добавить новую таблицу или поле: docker compose run --rm app alembic revision -m "add_transactions_table". После этого отредактируй созданный файл в папке alembic/versions, добавив логику в upgrade() и downgrade().
-- Применить все миграции: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic upgrade head
 - Откатить последнюю миграцию: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic downgrade -1
 - Откатить до конкретной версии: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic downgrade <revision_id>
 
