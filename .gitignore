@@ -1,0 +1,28 @@
+# Виртуальные окружения и кэши Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Docker
+docker-compose.override.yml
+.env
+
+# Alembic (не надо хранить кэш миграций)
+alembic/versions/*.pyc
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Локальные логи и временные файлы
+*.log
+tmp/
+temp/
+
+# OS
+.DS_Store
+Thumbs.db
