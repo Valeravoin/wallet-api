@@ -29,6 +29,7 @@
 
 ## Работа с миграциями 🛠️
 
+**Из‑за асинхронной природы проекта (SQLAlchemy 2.0 + `asyncpg`) миграции Alembic выполняются **в синхронном режиме**
 **Применить все миграции: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic upgrade head**
 
 - Когда нужно добавить новую таблицу или поле: docker compose run --rm app alembic revision -m "add_transactions_table". После этого отредактируй созданный файл в папке alembic/versions, добавив логику в upgrade() и downgrade().
