@@ -79,5 +79,5 @@
 ## Проверка данных в базе 👁️
 
 1. **Чтобы посмотреть текущие кошельки напрямую в PostgreSQL:**
-   w```bash
+   ```bash
    docker compose exec db psql -U postgres -d wallet_db -c "SELECT uuid, balance, created_at FROM wallets;"
