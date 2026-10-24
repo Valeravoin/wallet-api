@@ -15,37 +15,58 @@
 - **Стиль кода:** black (форматирование), flake8 (линтинг) ✨
 - **Переменные окружения:** python-dotenv 🔑
 
-## Структура проекта 📂
-
-Основные компоненты внутри папки app:
-
-- main.py — точка входа, инициализация FastAPI‑приложения.
-- models.py — SQLAlchemy‑модели (ORM), описывают структуру таблиц (например, Wallet).
-- schemas.py — Pydantic‑модели, валидируют входные и выходные данные API.
-- repository.py — слой доступа к данным (CRUD‑операции с базой).
-- database.py — настройка асинхронной сессии и движка (AsyncSession, create_async_engine).
-
 ---
+
+## Подготовка к запуску 🔧
+
+1. **Клонируй репозиторий:**
+   ```bash
+   git clone <ссылка-на-репозиторий>
+   cd wallet-api
+
+2. **Настрой переменные окружения:**
+   cp .env.example .env
+
+## Как запустить проект 🚀
+
+1. **Подними инфраструктуру (база данных + приложение):**
+   docker compose up -d --build
+
+2. **Проверь, что сервисы запущены:**
+   docker compose ps
+   Убедись, что статусы app и db — Up.
 
 ## Работа с миграциями 🛠️
 
-**Из‑за асинхронной природы проекта (SQLAlchemy 2.0 + `asyncpg`) миграции Alembic выполняются в синхронном режиме.**
-- Применить все миграции: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic upgrade head
-- Когда нужно добавить новую таблицу или поле: docker compose run --rm app alembic revision -m "add_transactions_table". После этого отредактируй созданный файл в папке alembic/versions, добавив логику в upgrade() и downgrade().
-- Откатить последнюю миграцию: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic downgrade -1
-- Откатить до конкретной версии: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic downgrade <revision_id>
+**Почему так: Alembic — синхронный инструмент. Для применения миграций мы используем синхронный драйвер psycopg2, а приложение продолжает работать на asyncpg. Переменная ALEMBIC_ENV_OFFLINE=1 переключает подключение внутри alembic/env.py.**
+
+1. **Применить все миграции:**
+   docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic upgrade head
+
+2. **Создать новую миграцию (автоматически):**
+   docker compose run --rm app alembic revision --autogenerate -m "add_transactions_table"
+
+3. **Откатить последнюю миграцию:**
+   docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic downgrade -1
+
+4. **Проверить статус миграций:**
+   docker compose exec db psql -U postgres -d wallet_db -c "SELECT * FROM alembic_version;"
 
 ## Тестирование 🧫
 
-**Чтобы запустить тесты:**
-- Команда для установки пакетов: docker compose up -d --build
-- Команда для запуска тестов: docker compose run --rm app pytest tests/ -v
-Проект настроен на использование pytest-asyncio, поэтому асинхронные тесты выполняются корректно.
+**Тесты изолированы и очищают базу перед каждым запуском.**
 
-## Как запустить 🚀
+1. **Убедись, что стек поднят:**
+   docker compose up -d
 
-1. **Убедись, что есть файл `.env`** в корне проекта (пример `.env.example` можно создать вручную).  
-   Обязательные переменные:
-   ```env
-   DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/wallet_db
-   DEBUG=true
+2. **Запусти тесты:**
+   docker compose run --rm app pytest tests/ -v
+
+3. **Ожидаемый результат:**
+   5 passed in ...s
+   💡 Совет: Если тесты падают с ConnectError, убедись, что команда up -d была выполнена перед запуском тестов. Контейнер app должен быть запущен, чтобы тесты могли постучаться в него по имени сервиса.
+
+## Проверка данных в базе 👁️
+
+1. **Чтобы посмотреть текущие кошельки напрямую в PostgreSQL:**
+   docker compose exec db psql -U postgres -d wallet_db -c "SELECT uuid, balance, created_at FROM wallets;"
