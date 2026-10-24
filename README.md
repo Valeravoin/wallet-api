@@ -29,15 +29,17 @@
 
 ## Работа с миграциями 🛠️
 
-**Из‑за асинхронной природы проекта (SQLAlchemy 2.0 + `asyncpg`) миграции Alembic выполняются в синхронном режиме Применить все миграции: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic upgrade head**
-
+**Из‑за асинхронной природы проекта (SQLAlchemy 2.0 + `asyncpg`) миграции Alembic выполняются в синхронном режиме.**
+- Применить все миграции: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic upgrade head
 - Когда нужно добавить новую таблицу или поле: docker compose run --rm app alembic revision -m "add_transactions_table". После этого отредактируй созданный файл в папке alembic/versions, добавив логику в upgrade() и downgrade().
 - Откатить последнюю миграцию: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic downgrade -1
 - Откатить до конкретной версии: docker compose run --rm -e ALEMBIC_ENV_OFFLINE=1 app alembic downgrade <revision_id>
 
 ## Тестирование 🧫
 
-- Чтобы запустить тесты: docker compose up -d --build. Подождать 5 секунд. docker compose run --rm app pytest tests/ -v
+**Чтобы запустить тесты:**
+- Команда для установки пакетов: docker compose up -d --build
+- Команда для запуска тестов: docker compose run --rm app pytest tests/ -v
 Проект настроен на использование pytest-asyncio, поэтому асинхронные тесты выполняются корректно.
 
 ## Как запустить 🚀
